@@ -49,6 +49,46 @@ const createMovie = asyncHandler(async (req,res) => {
     
 })
 
+const getMovieById = asyncHandler(async (req, res) => {
+    const { movieId } = req.params;
+
+    const movie = await Movie.findById(movieId);
+
+    if (!movie) {
+        throw new ApiError(404, "Movie not found");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            "Movie fetched successfully",
+            movie
+        )
+    );
+});
+
+const deleteMovie = asyncHandler(async (req, res) => {
+    const { movieId } = req.params;
+
+    const movie = await Movie.findByIdAndDelete(movieId);
+
+    if (!movie) {
+        throw new ApiError(404, "Movie not found");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            "Movie deleted successfully",
+            movie
+        )
+    );
+})
+
 export { 
-    createMovie
+    createMovie,
+    getMovieById,
+    deleteMovie
  }

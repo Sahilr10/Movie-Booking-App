@@ -13,6 +13,7 @@ const createMovie = asyncHandler(async (req,res) => {
         throw new ApiError(400, "All fields are required");
     }
 
+
     if (!Array.isArray(casts) || casts.length === 0) {
         throw new ApiError(400, "Casts are required and must be an array");
     }
@@ -24,6 +25,8 @@ const createMovie = asyncHandler(async (req,res) => {
     if (!releaseDate || isNaN(new Date(releaseDate).getTime())) {
         throw new ApiError(400, "Valid release date is required");
     }
+
+    
 
     const movie = await Movie.create({
         name,
@@ -87,8 +90,73 @@ const deleteMovie = asyncHandler(async (req, res) => {
     );
 })
 
+const updateMovie = asyncHandler(async (req,res) => {
+    const { movieId } = req.params;
+    const { name, description, casts, trailerUrl, language, releaseDate, director, gener, releaseStatus } = req.body;
+
+    const updateData = {
+    name,
+    description,
+    casts,
+    trailerUrl,
+    language,
+    releaseDate,
+    director,
+    gener,
+    releaseStatus
+    };
+
+    const movie = await Movie.findByIdAndUpdate(
+        movieId,
+        { $set: updateData },
+        {   
+            new: true,
+            runValidators: true
+        }
+    )
+
+    if(!movie){
+        throw new ApiError(404, "Movie not found");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            "Movie updated successfully",
+            movie
+        )
+    );
+})
+
+const getMoviesByName = asyncHandler(async (req, res) => {
+     const { name } = req.query;
+
+  if (!name || name.trim() === "") {
+    throw new ApiError(400, "Movie name is required for search");
+  }
+
+  const movies = await Movie.find({
+    name: { $regex: name, $options: "i" }   
+  });
+
+  if (movies.length === 0) {
+    throw new ApiError(404, "No movies found with the given name");
+  }
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            "Movies fetched successfully",
+            movies
+        )
+    );
+})
+
 export { 
     createMovie,
     getMovieById,
-    deleteMovie
+    deleteMovie,
+    updateMovie,
+    getMoviesByName
  }

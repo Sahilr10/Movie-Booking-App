@@ -17,8 +17,10 @@ app.use(cookieParser())
 //routes import
 
 import movieRouter from "./routes/movie.routes.js";
+import theatreRouter from "./routes/theatre.routes.js";
 
 //routes declaration
 app.use('/api/v1/movies', movieRouter);
+app.use('/api/v1/theatres', theatreRouter);
 
 export { app }

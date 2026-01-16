@@ -10,6 +10,11 @@ const theatreSchema = new mongoose.Schema(
         description:{
             type: String,
         },
+        movies: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+            
+        }],
         city:{
             type: String,
             required: true
